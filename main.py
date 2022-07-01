@@ -1,5 +1,5 @@
+import numpy as np
 import pandas as pd
-import doctest
 
 
 def check_is_string(text) -> bool:
@@ -18,6 +18,10 @@ def check_is_decimal(text) -> bool:
     return text.isdecimal()
 
 
+def check_is_nan(text) -> bool:
+    return text is np.nan
+
+
 def check_excel_document_is_right(data) -> bool:
     for row in data.iloc[0:, 0:].itertuples():
         for i in range(2, len(row)):
@@ -26,36 +30,23 @@ def check_excel_document_is_right(data) -> bool:
     return True
 
 
-def main(file):
-    """
-    >>> main({"1":["Имя","Фамилия","Возраст"],"2":["Олег","Ольга",3]})
-    верного формата
-    >>> main({"1":["Имя","Фамилия","Возраст"],"2":["Олег","Ольга","3"]})
-    верного формата
-    >>> main({"1":["Имя","Фамилия",],"2":["Олег","Ольга"]})
-    верного формата
-    >>> main({"1":["Имя","Фамилия","Возраст"],"2":["ОЛЕГ","ОЛЬГА",3]})
-    верного формата
-    >>> main({"1":["Имя","Фамилия","Возраст"],"2":["Олег","Оль1га",3]})
-    неверного формата
-    >>> main({"1":["Имя","Фамилия","Возраст"],"2":["Олег","Ольга","у"]})
-    неверного формата
-    >>> main({"1":["Имя","Фамилия","Возраст"],"2":["Олег1","Ольга","3"]})
-    неверного формата
-    >>> main({"1":["Имя","Фамилия","Возраст"],"2":["олег","Ольга","3"]})
-    неверного формата
-    """
-    df = pd.DataFrame(file)
-    if (set(df.iloc[0:, 0]) - set(CONST.keys())):
-        print("неверного формата")
-    elif check_excel_document_is_right(df):
+def main(file_name):
+    df = pd.read_excel(file_name, header=None)
+    print(df)
+    if output := (set(df.iloc[0:, 0]) - CONST.keys()):
+        print(f"{','.join(output)} не являются шаблонами")
+        return
+    if output := (CONST.keys() - set(df.iloc[0:, 0]) - {np.nan}):
+        print(f"{','.join(output)} не были введены")
+        return
+    if check_excel_document_is_right(df):
         print("верного формата")
-    else:
-        print("неверного формата")
+        return
+    print("неверного формата")
 
 
-CONST = {'Имя': check_is_string, 'Фамилия': check_is_string, 'Возраст': check_is_decimal}
-file = "data"
+CONST = {'Имя': check_is_string, 'Фамилия': check_is_string, 'Возраст': check_is_decimal, np.nan: check_is_nan}
+file = "data1"
 
 if __name__ == '__main__':
-    doctest.testmod()
+    main(f'{file}.xlsx')
