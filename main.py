@@ -32,7 +32,9 @@ def check_excel_document_is_right(data) -> bool:
 
 def main(file_name):
     df = pd.read_excel(file_name, header=None)
-    print(df)
+    if df.shape[1]<2:
+        print("Таблица не заполнена")
+        return
     if output := (set(df.iloc[0:, 0]) - CONST.keys()):
         print(f"{','.join(output)} не являются шаблонами")
         return
