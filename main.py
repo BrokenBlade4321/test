@@ -28,8 +28,6 @@ def check_excel_document_is_right(data) -> bool:
 
 def main(file):
     """
-    Return the factorial of n, an exact integer >= 0.
-
     >>> main({"1":["Имя","Фамилия","Возраст"],"2":["Олег","Ольга",3]})
     верного формата
     >>> main({"1":["Имя","Фамилия","Возраст"],"2":["Олег","Ольга","3"]})
