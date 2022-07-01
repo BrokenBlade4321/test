@@ -26,7 +26,7 @@ def check_excel_document_is_right(data) -> bool:
 
 
 def main(file):
-    df = pd.read_excel(file)
+    df = pd.DataFrame(file)
     if (set(df.iloc[0:, 0]) - set(CONST.keys())):
         print("неверного формата")
     elif check_excel_document_is_right(df):
@@ -36,7 +36,7 @@ def main(file):
 
 
 CONST = {'Имя': check_is_string, 'Фамилия': check_is_string, 'Возраст': check_is_decimal}
-file = "data"
 
 if __name__ == '__main__':
-    main(file)
+    data = {"1":"123"}
+    main(data)
