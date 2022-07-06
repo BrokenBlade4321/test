@@ -3,7 +3,7 @@ import pandas as pd
 
 
 def check_is_string(text) -> bool:
-    if isinstance(text, (int, float)):
+    if not isinstance(text, str):
         return False
     if not text.isalpha():
         return False
@@ -11,11 +11,11 @@ def check_is_string(text) -> bool:
 
 
 def check_is_decimal(text) -> bool:
-    if isinstance(text, int):
+    if isinstance(text, (float, int)):
         return text > 0
-    if isinstance(text, float):
-        return False
-    return text.isdecimal()
+    if isinstance(text, str):
+        return text.isdecimal()
+    return False
 
 
 def check_is_nan(text) -> bool:
@@ -23,31 +23,27 @@ def check_is_nan(text) -> bool:
 
 
 def check_excel_document_is_right(data) -> bool:
-    for row in data.iloc[0:, 0:].itertuples():
+    for row in data.iloc.itertuples():
         for i in range(2, len(row)):
-            if not CONST[row[1]](row[i]):
+            if not check_cell_by_template[row[1]](row[i]):
                 return False
     return True
 
 
 def main(file_name):
     df = pd.read_excel(file_name, header=None)
-    if df.shape[1]<2:
-        print("Таблица не заполнена")
-        return
-    if output := (set(df.iloc[0:, 0]) - CONST.keys()):
-        print(f"{','.join(output)} не являются шаблонами")
-        return
-    if output := (CONST.keys() - set(df.iloc[0:, 0]) - {np.nan}):
-        print(f"{','.join(output)} не были введены")
-        return
+    if df.shape[1] < 2:
+        return False
+    if set(df.iloc[0:, 0]) - check_cell_by_template.keys():
+        return False
+    if check_cell_by_template.keys() - set(df.iloc[0:, 0]) - {np.nan}:
+        return False
     if check_excel_document_is_right(df):
-        print("верного формата")
-        return
-    print("неверного формата")
+        return True
+    return False
 
 
-CONST = {'Имя': check_is_string, 'Фамилия': check_is_string, 'Возраст': check_is_decimal, np.nan: check_is_nan}
+check_cell_by_template = {'Имя': check_is_string, 'Фамилия': check_is_string, 'Возраст': check_is_decimal, np.nan: check_is_nan}
 file = "data1"
 
 if __name__ == '__main__':
