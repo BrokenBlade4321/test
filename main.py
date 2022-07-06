@@ -22,7 +22,7 @@ def check_is_nan(text) -> bool:
     return text is np.nan
 
 
-def check_excel_document_is_right(data) -> bool:
+def check_excel_document_is_correct_by_template(data) -> bool:
     for row in data.iloc.itertuples():
         for i in range(2, len(row)):
             if not check_cell_by_template[row[1]](row[i]):
@@ -30,7 +30,7 @@ def check_excel_document_is_right(data) -> bool:
     return True
 
 
-def main(file_name):
+def check_excel_document_is_correct(file_name) -> bool:
     df = pd.read_excel(file_name, header=None)
     if df.shape[1] < 2:
         return False
@@ -38,7 +38,7 @@ def main(file_name):
         return False
     if check_cell_by_template.keys() - set(df.iloc[0:, 0]) - {np.nan}:
         return False
-    if check_excel_document_is_right(df):
+    if check_excel_document_is_correct_by_template(df):
         return True
     return False
 
@@ -47,4 +47,4 @@ check_cell_by_template = {'Имя': check_is_string, 'Фамилия': check_is_
 file = "data1"
 
 if __name__ == '__main__':
-    main(f'{file}.xlsx')
+    check_excel_document_is_correct(f'{file}.xlsx')
